@@ -1,10 +1,12 @@
-import getOrder from './utils';
+/* eslint-disable array-callback-return */
+import {orderMayMen, orderMenMay} from './utils';
 
 const {
     GET_ALL_PRODUCTS,
     GET_PRODUCT_BY_ID,
     UPDATE_PRODUCT,
-    SET_ORDER
+    ORDEN_NAME,
+    GET_INSTRUMENT_BY_NAME
 } = require('../actions/index');
 
 const initialState = {
@@ -48,10 +50,30 @@ export default function rootReducer(state = initialState, action) {
                 ...state,
                 allInstruments: [action.payload, ...state.allInstruments]
             }
-        case SET_ORDER:
+        case ORDEN_NAME:
+            let instrumentByOrd;
+            if (action.payload === 'NA') {
+                instrumentByOrd = state.allIstruments.map(instrument => {
+                    let inst
+                    state.instruments.map(ins => {
+                        if (instrument.name === ins.name) inst = ins
+                    })
+                    return inst
+                })
+            } else if (action.payload === 'NDU') {
+                instrumentByOrd = orderMayMen(state.instruments, 'name')
+            } else {
+                instrumentByOrd = orderMenMay(state.instruments, 'name')
+            }
             return {
                 ...state,
-                instruments: getOrder(state.allInstruments, action.payload)
+                instruments: [...instrumentByOrd.flat(2)]
+            }
+            case GET_INSTRUMENT_BY_NAME: 
+            return {
+                ...state,
+                instruments: state.allInstruments.filter(instrument =>
+                    instrument.name.toLowerCase().includes(action.payload.toLowerCase()))
             }
 
         default:

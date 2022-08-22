@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const URL_PRODUCTS= "http://localhost:4000/products";  // temporal para las pruebas
+const URL_FILTERS= "http://localhost:4000/categories";  // temporal para las pruebas
 
 export const GET_ALL_PRODUCTS = "GET_ALL_PRODUCTS";
 export const GET_ALL_CATEGORIES = "GET_ALL_CATEGORIES";
@@ -8,7 +9,7 @@ export const CREATE_PRODUCT = "CREATE_PRODUCT";
 export const GET_INSTRUMENT_BY_NAME = "GET_INSTRUMENT_BY_NAME";
 export const GET_PRODUCT_BY_ID= "GET_PRODUCT_BY_ID";
 export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
-export const SET_ORDER = "SET_ORDER";
+export const ORDEN_NAME = "ORDEN_NAME";
 
 export const getAllProducts = () => {
     return async function (dispatch) {
@@ -73,9 +74,9 @@ export function createProduct(payload){
     }
 }
 
-export function orderby(order){
+export function orderPerName(payload){
     return {
-        type: SET_ORDER,
-        payload: order
+        type: ORDEN_NAME,
+        payload
     }
 }

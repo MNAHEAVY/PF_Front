@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,15 +8,16 @@ import Filters from "../../components/Filters/Filters";
 import ProductCard from '../Card/index';
 import Dropdown from 'react-bootstrap/Dropdown';
 import './CardContainer.css';
-import { orderby } from "../../redux/actions";
+import { orderPerName } from "../../redux/actions";
 
 export default function CardContainer() {
-
+    
     const allInstruments = useSelector(state => state.instruments)
-    const cargo = useSelector(state => state.allInstruments)
+    // const cargo = useSelector(state => state.allInstruments)
     const [currentPage, setCurrentPage] = useState(1)
-    const [order, setOrder] = useState({})
+    // const [order, setOrder] = useState({})
     const dispatch = useDispatch();
+    const [refresh, setRefresh] = useState(1)
 
     useEffect(() => {
         setCurrentPage(1)
@@ -25,11 +27,11 @@ export default function CardContainer() {
         window.scrollTo({ behavior: 'smooth', top: '0px' });
     }, [currentPage]);
 
-    useEffect(() => {
-        if (cargo && cargo.length > 0) {
-            dispatch(orderby(order))
-        }
-    }, [order, cargo])
+    // useEffect(() => {
+    //     if (cargo && cargo.length > 0) {
+    //         dispatch(orderby(order))
+    //     }
+    // }, [order, cargo])
 
     let idxLastItem = currentPage * 15
     let ixdFirstItem = idxLastItem - 15
@@ -46,40 +48,10 @@ export default function CardContainer() {
 
     const paginate = (number) => { setCurrentPage(number) }
 
-    function handleOrder(e) {
-        let key = e.target.name
-        switch (key) {
-            case "NUD":
-                setOrder({
-                    ...order, names: true, nameAsc: 1
-                })
-                break;
-            case "NDU":
-                setOrder({
-                    ...order, names: true, nameAsc: -1
-                })
-                break;
-            case "NA":
-                setOrder({
-                    ...order, names: undefined, nameAsc: 1
-                })
-                break;
-            case "PUD":
-                setOrder({
-                    ...order, prices: true, priceAsc: 1
-                })
-                break;
-            case "PDU":
-                setOrder({
-                    ...order, prices: true, priceAsc: -1
-                })
-                break;
-            default:
-                setOrder({
-                    ...order, prices: undefined, priceAsc: 1
-                })
-                break;
-        }
+    function handleOrder(e){
+        e.preventDefault();
+        setRefresh(refresh + 1)
+        dispatch(orderPerName(e.target.value))
     }
 
     return (
