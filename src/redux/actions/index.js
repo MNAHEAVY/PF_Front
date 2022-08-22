@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const URL_PRODUCTS = "http://localhost:4000/products";  // temporal para las pruebas
+//const URL_PRODUCTS = "http://localhost:4000/products";  // temporal para las pruebas
 
 export const GET_ALL_PRODUCTS = "GET_ALL_PRODUCTS";
 export const GET_ALL_CATEGORIES = "GET_ALL_CATEGORIES";
@@ -13,7 +13,7 @@ export const FILTERED_INSTRUMENTS = "FILTERED_INSTRUMENTS";
 
 export const getAllProducts = () => {
     return async function (dispatch) {
-        const products = await axios(URL_PRODUCTS)  // temporal para las pruebas
+        const products = await axios("/products")  // temporal para las pruebas
 
         return dispatch({
             type: GET_ALL_PRODUCTS,
@@ -41,7 +41,7 @@ export const getAllCategories = () => {
 
 export const getProductById = (instrumentId) => {
     return function (dispatch) {
-        axios.get(`${URL_PRODUCTS}/${instrumentId}`)
+        axios.get(`/${instrumentId}`)
             .then(response =>
                 dispatch({
                     type: GET_PRODUCT_BY_ID,
@@ -59,7 +59,7 @@ export const getProductById = (instrumentId) => {
 
 export const updateProduct = (instrumentItem) => {
     return async function (dispatch) {
-        const response = await axios.put(`${URL_PRODUCTS}/${instrumentItem._id}`,
+        const response = await axios.put(`/${instrumentItem._id}`,
             instrumentItem);
         return dispatch({
             type: UPDATE_PRODUCT,
@@ -70,25 +70,34 @@ export const updateProduct = (instrumentItem) => {
 
 export function createProduct(payload) {
     return async function (dispatch) {
-        await axios.post('http://localhost:4000/products', payload)
+        await axios.post('/products', payload)
     }
 }
 
 export function filteredIntruments(payload) {
     return async function (dispatch) {
-        const filter = await axios.get(`http://localhost:4000/filter?${payload}`)
+        const filter = await axios.get(`/filter?${payload}`)
         dispatch({
             type: FILTERED_INSTRUMENTS,
             payload: filter.data
         })
     }
 }
+
+export function orderPerName(payload){
+    return {
+        type: "ORDEN_NAME",
+        payload
+    }
+}
 export function getInstrumentsByName (name) {
     return async function (dispatch) {
-        const search = await axios.get(`http://localhost:4000/filter?name=${name}`)
+        const search = await axios.get(`/filter?name=${name}`)
         dispatch({
             type: "GET_INSTRUMENTS_BY_NAME",
             payload: search.data
         })
     }
+
+
 }
