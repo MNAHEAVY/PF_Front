@@ -8,6 +8,7 @@ export const CREATE_PRODUCT = "CREATE_PRODUCT";
 export const GET_INSTRUMENT_BY_NAME = "GET_INSTRUMENT_BY_NAME";
 export const GET_PRODUCT_BY_ID= "GET_PRODUCT_BY_ID";
 export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
+export const SET_ORDER = "SET_ORDER";
 
 export const getAllProducts = () => {
     return async function (dispatch) {
@@ -69,5 +70,12 @@ export const updateProduct = (instrumentItem) => {
 export function createProduct(payload){
     return async function(dispatch){
         await axios.post('http://localhost:4000/products',payload)
+    }
+}
+
+export function orderby(order){
+    return {
+        type: SET_ORDER,
+        payload: order
     }
 }

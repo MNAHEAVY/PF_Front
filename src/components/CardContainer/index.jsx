@@ -1,64 +1,115 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Pagination from "../Pagination";
 import Loading from "../Loading";
 import Filters from "../../components/Filters/Filters";
 import ProductCard from '../Card/index';
 import Dropdown from 'react-bootstrap/Dropdown';
 import './CardContainer.css';
+import { orderby } from "../../redux/actions";
 
 export default function CardContainer() {
-  
-  const allInstruments = useSelector(state => state.instruments)
-  const [currentPage, setCurrentPage] = useState(1)
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [allInstruments])
+    const allInstruments = useSelector(state => state.instruments)
+    const cargo = useSelector(state => state.allInstruments)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [order, setOrder] = useState({})
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    window.scrollTo({ behavior: 'smooth', top: '0px' }); 
-}, [currentPage]);
-  
-  let idxLastItem = currentPage * 15
-  let ixdFirstItem = idxLastItem - 15
-  let pageInstruments = allInstruments.slice(ixdFirstItem, idxLastItem)
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [allInstruments])
 
-  let mapInstruments = pageInstruments.map(instrument => <ProductCard
-    key={instrument._id}
-    id={instrument._id}
-    name={instrument.name}
-    price={instrument.price}
-    brand={instrument.brand}
-    rating={1}
-    image={instrument.image} />)
+    useEffect(() => {
+        window.scrollTo({ behavior: 'smooth', top: '0px' });
+    }, [currentPage]);
 
-  const paginate = (number) => { setCurrentPage(number) }
+    useEffect(() => {
+        if (cargo && cargo.length > 0) {
+            dispatch(orderby(order))
+        }
+    }, [order, cargo])
 
-  return (
-    <div className="containerHome">
-      <Dropdown className="orderButton" size="sm">
-        <Dropdown.Toggle variant="success" className="toglleDropDown" id="dropdown-basic">
-          Order By
-        </Dropdown.Toggle>
+    let idxLastItem = currentPage * 15
+    let ixdFirstItem = idxLastItem - 15
+    let pageInstruments = allInstruments.slice(ixdFirstItem, idxLastItem)
 
-        <Dropdown.Menu>
-          <Dropdown.Item >Ordenamiento 1</Dropdown.Item>
-          <Dropdown.Item >Ordenamiento 2</Dropdown.Item>
-          <Dropdown.Item >ORdenamiento 3</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+    let mapInstruments = pageInstruments.map(instrument => <ProductCard
+        key={instrument._id}
+        id={instrument._id}
+        name={instrument.name}
+        price={instrument.price}
+        brand={instrument.brand}
+        rating={1}
+        image={instrument.image} />)
 
-      {mapInstruments ? 
-        <div className="containerContent">
-          <Filters/>
-          <div className="containerCards">
-            {mapInstruments}
-          </div>
-        </div> 
-      : <Loading />}
+    const paginate = (number) => { setCurrentPage(number) }
 
-      <Pagination currentPage={currentPage} postPerPage={15} totalPosts={allInstruments.length} paginate={paginate} />
-    </div>
-  )
+    function handleOrder(e) {
+        let key = e.target.name
+        switch (key) {
+            case "NUD":
+                setOrder({
+                    ...order, names: true, nameAsc: 1
+                })
+                break;
+            case "NDU":
+                setOrder({
+                    ...order, names: true, nameAsc: -1
+                })
+                break;
+            case "NA":
+                setOrder({
+                    ...order, names: undefined, nameAsc: 1
+                })
+                break;
+            case "PUD":
+                setOrder({
+                    ...order, prices: true, priceAsc: 1
+                })
+                break;
+            case "PDU":
+                setOrder({
+                    ...order, prices: true, priceAsc: -1
+                })
+                break;
+            default:
+                setOrder({
+                    ...order, prices: undefined, priceAsc: 1
+                })
+                break;
+        }
+    }
+
+    return (
+        <div className="containerHome">
+            <Dropdown className="orderButton" size="sm">
+                <Dropdown.Toggle variant="success" className="toglleDropDown" id="dropdown-basic">
+                    Order By
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu onClick={handleOrder}>
+                    <Dropdown.Item name="NUD">Name - Up to down</Dropdown.Item>
+                    <Dropdown.Item name="NDU" >Name - Down to up</Dropdown.Item>
+                    <Dropdown.Item name="NA" >Name - Any</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item name="PUD" >Price - Up to down</Dropdown.Item>
+                    <Dropdown.Item name="PDU" >Price - Down to up</Dropdown.Item>
+                    <Dropdown.Item name="PA" >Price - Any</Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>
+
+            {mapInstruments ?
+                <div className="containerContent">
+                    <Filters />
+                    <div className="containerCards">
+                        {mapInstruments}
+                    </div>
+                </div>
+                : <Loading />}
+
+            <Pagination currentPage={currentPage} postPerPage={15} totalPosts={allInstruments.length} paginate={paginate} />
+        </div>
+    )
 }
